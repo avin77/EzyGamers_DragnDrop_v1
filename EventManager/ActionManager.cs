@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ezygamer.dragndropv1
+namespace ezygamers.dragndropv1
 {
 
     public class DragNDropActionManager : MonoBehaviour

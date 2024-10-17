@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using VContainer;
 
 
-namespace ezygamer.dragndropv1
+namespace ezygamers.dragndropv1
 {
     public class DropHandler : MonoBehaviour, IDropHandler
     {

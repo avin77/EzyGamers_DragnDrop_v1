@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace ezygamer.dragndropv1
+namespace ezygamers.dragndropv1
 {
     //This class handle the drag logic of the GameObject
     //to the strategy defined by IDragHandler
