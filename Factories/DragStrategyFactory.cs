@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace ezygamer.DropNDrag
+namespace ezygamer.dragndropv1
 {
 
     //base class for creating drag strategy instances e.g- UIDragStrategy
