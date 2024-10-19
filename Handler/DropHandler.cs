@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using VContainer;
 
 
@@ -10,6 +7,8 @@ namespace ezygamers.dragndropv1
 {
     public class DropHandler : MonoBehaviour, IDropHandler
     {
+        public string OptionID; //holds the value of option ID from the OptionID of Question Data -rohan37kumar
+
         private CMSGameEventManager eventManager;
 
         [Inject]
@@ -37,8 +36,9 @@ namespace ezygamers.dragndropv1
                 draggedGamObject.transform.localPosition = Vector3.zero;
                 Debug.Log("ItemDropped");
 
-                eventManager.OptionSelected("answer"); //triggering the event -rohan37kumar
-                Debug.Log("action called");
+                eventManager.OptionSelected(OptionID); //triggering the event -rohan37kumar
+                //Debug.Log(OptionID);
+                //Debug.Log("action called");
             }
         }
 
