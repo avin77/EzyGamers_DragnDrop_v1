@@ -2,26 +2,37 @@
 using UnityEngine;
 using System;
 
-
 namespace ezygamers.dragndropv1
 {
     //this class implements the IDragStrategy interface to handle drap operation on UI element
-    public class UIElementDrag :IDragStrategy
+    public class UIElementDrag : IDragStrategy
     {
-      //reference of the element
+        //reference of the element
         private RectTransform rectTransform;
         private CanvasGroup canvasGroup;
-        private bool isInDropZone = false;
+        //private bool isInDropZone = false;
         //store the intial position
-        private Vector3 origanalPosition;
+        private Vector3 originalPosition;
+        private GameObject currentDropArea = null;
+        private Canvas parentCanvas;
+        private Camera mainCamera;
+
         //intialization through constructor with required components
-        public UIElementDrag(RectTransform rectTransform,CanvasGroup canvasGroup){
-            this.rectTransform=(rectTransform);
+        public UIElementDrag(RectTransform rectTransform, CanvasGroup canvasGroup)
+        {
+            this.rectTransform = (rectTransform);
             this.canvasGroup = canvasGroup;
-            origanalPosition =rectTransform.localPosition;
+            originalPosition = rectTransform.localPosition;
+
+            // Get reference to the parent canvas and camera, to make the dragged object visible
+            parentCanvas = rectTransform.GetComponentInParent<Canvas>();
+            mainCamera = parentCanvas.worldCamera;
+            if (mainCamera == null)
+            {
+                mainCamera = Camera.main;
+            }
         }
 
-       
         //when user start dragging the UI element
         public void OnBeginDrag(PointerEventData eventData)
         {
@@ -30,53 +41,91 @@ namespace ezygamers.dragndropv1
             //disable the raycast of dragged item
             canvasGroup.blocksRaycasts = false;
             //scale down the draggable element
-            rectTransform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-            
+            rectTransform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+
         }
-    
+
         //
         public void OnDrag(PointerEventData eventData)
         {
             //update the position of the UI
-            rectTransform.position = Input.mousePosition ;
-            if (eventData.pointerEnter && eventData.pointerEnter.GetComponent<DropHandler>())
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = parentCanvas.planeDistance; // Use canvas's plane distance
+            Vector3 worldPos = mainCamera.ScreenToWorldPoint(mousePos);
+            rectTransform.position = worldPos;
+
+            GameObject newDropArea = null;
+            if (eventData.pointerEnter != null)
             {
-                if (!isInDropZone)
+                // Try to get DropHandler from the current object or its parents
+                var dropHandler = eventData.pointerEnter.GetComponent<DropHandler>();
+                if (dropHandler == null)
                 {
-                    //If newly entered a valid drop zone, trigger the drop area highlight
-                    Actions.onDropHighlight?.Invoke();
-                    isInDropZone = true;
+                    dropHandler = eventData.pointerEnter.GetComponentInParent<DropHandler>();
+                }
+
+                if (dropHandler != null)
+                {
+                    newDropArea = dropHandler.gameObject;
                 }
             }
-            else if (isInDropZone)
+
+            // Handle drop area changes
+            if (newDropArea != currentDropArea)
             {
-                //if leaving the valid drop zone, remove the highlight
-                Actions.onDropRemoveHighlight?.Invoke();
-                isInDropZone = false;
+                // Remove highlight from previous drop area
+                if (currentDropArea != null)
+                {
+                    Actions.onDropRemoveHighlight?.Invoke(currentDropArea);
+                    //isInDropZone = false;
+                }
+
+                // Add highlight to new drop area
+                if (newDropArea != null)
+                {
+                    Actions.onDropHighlight?.Invoke(newDropArea);
+                    //isInDropZone = true;
+                }
+
+                currentDropArea = newDropArea;
             }
         }
 
-       
-
-    //when user stops dragging
-    public void OnEndDrag(PointerEventData eventData)
+        //when user stops dragging
+        public void OnEndDrag(PointerEventData eventData)
         {
             //enable the raycast for interaction
             canvasGroup.blocksRaycasts = true;
-            
-            // Check if it was dropped on a valid DropHandler
-            if (!eventData.pointerEnter || !eventData.pointerEnter.GetComponent<DropHandler>())
-            {
-                // Snapback to original position if not dropped in a valid DropHandler
-                rectTransform.anchoredPosition =origanalPosition ;
-               
-            }
-            //reve
-            rectTransform.localScale = new Vector3(1f, 1f, 1f);
 
-            //remove the highlight of drop area
+            bool validDrop = false;
+            if (eventData.pointerEnter != null)
+            {
+                var dropHandler = eventData.pointerEnter.GetComponent<DropHandler>();
+                if (dropHandler == null)
+                {
+                    dropHandler = eventData.pointerEnter.GetComponentInParent<DropHandler>();
+                }
+                validDrop = dropHandler != null;
+            }
+
+            if (!validDrop)
+            {
+                // Convert original position back to world space
+                Vector3 localPos = originalPosition;
+                localPos.z = parentCanvas.planeDistance;
+                rectTransform.localPosition = localPos;
+            }
+
+            // Remove all highlights
+            if (currentDropArea != null)
+            {
+                Actions.onDropRemoveHighlight?.Invoke(currentDropArea);
+                currentDropArea = null;
+                //isInDropZone = false;
+            }
+
             Actions.onDragRemoveHighlight?.Invoke();
-            
+            rectTransform.localScale = Vector3.one;
         }
     }
 }
