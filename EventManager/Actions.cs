@@ -9,5 +9,5 @@ public static class Actions
     public static Action onDragRemoveHighlight;
     public static Action<GameObject> onDropHighlight;
     public static Action<GameObject> onDropRemoveHighlight;
-    public static Action<string> onItemDropped;
+    public static Action<GameObject> onItemDropped;
 }

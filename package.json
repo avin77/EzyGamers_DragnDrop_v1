@@ -1,6 +1,6 @@
 {
   "name": "com.ezygamers.dragndropv1",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "displayName": "com.ezygamers.dragndropv1",
   "description": "This Project is used to implemnt drag and drop startegy to gameObjects in Unity",
   "unity": "2022.3",

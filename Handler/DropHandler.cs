@@ -27,16 +27,12 @@ namespace ezygamers.dragndropv1
                 var draggedGameObject = draggableHandler.gameObject.transform;
 
                 //Snapping back the object to original position
-                //RectTransform originalRect = originalPos.GetComponent<RectTransform>();
-                //Vector2 targetPos = originalRect.anchoredPosition;
                 draggedGameObject.transform.position = originalPos.transform.position;
 
                 Debug.Log($"Item Dropped on: {gameObject.name}");
 
-                //nudging this object to show dropped on this
-                LeanTween.moveX(this.gameObject, transform.position.x + 0.1f, 0.05f).setEase(LeanTweenType.easeInOutSine).setLoopPingPong((int)(0.5f / 0.05f)).setOnComplete(() => transform.position = transform.position);
-
-                Actions.onItemDropped?.Invoke(OptionID); //triggering the event -rohan37kumar
+                Actions.onItemDropped?.Invoke(this.gameObject); //triggering the event -rohan37kumar
+                //TODO: Nudge this gameobject in Assembler Project
                 //Debug.Log(OptionID);
                 //Debug.Log("action called");
             }
