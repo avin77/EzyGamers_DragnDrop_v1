@@ -16,6 +16,7 @@ namespace ezygamers.dragndropv1
         private GameObject currentDropArea = null;
         private Canvas parentCanvas;
         private Camera mainCamera;
+        private bool isPointerDown = false;
 
         //intialization through constructor with required components
         public UIElementDrag(RectTransform rectTransform, CanvasGroup canvasGroup)
@@ -33,21 +34,35 @@ namespace ezygamers.dragndropv1
             }
         }
 
+        //when user taps down on the image
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            isPointerDown = true;
+            Actions.onDragHighlight?.Invoke();
+            rectTransform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (isPointerDown && !eventData.dragging)
+            {
+                isPointerDown = false;
+                Actions.onDragRemoveHighlight?.Invoke();
+                rectTransform.localScale = Vector3.one;
+            }
+        }
+
         //when user start dragging the UI element
         public void OnBeginDrag(PointerEventData eventData)
         {
-
-            Actions.onDragHighlight?.Invoke();
             //disable the raycast of dragged item
-            canvasGroup.blocksRaycasts = false;
-            //scale down the draggable element
-            rectTransform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
-
+            canvasGroup.blocksRaycasts = false;   
         }
 
         //
         public void OnDrag(PointerEventData eventData)
         {
+            Actions.onDrag?.Invoke();
             //update the position of the UI
             Vector3 mousePos = Input.mousePosition;
             mousePos.z = parentCanvas.planeDistance; // Use canvas's plane distance
@@ -94,6 +109,7 @@ namespace ezygamers.dragndropv1
         //when user stops dragging
         public void OnEndDrag(PointerEventData eventData)
         {
+            isPointerDown = false;
             //enable the raycast for interaction
             canvasGroup.blocksRaycasts = true;
 

@@ -14,6 +14,10 @@ namespace ezygamers.dragndropv1
         //called when user stops dragging the object
         void OnEndDrag(PointerEventData eventData);
 
+        //called when pointer is down or up
+        void OnPointerDown(PointerEventData eventData);
+        void OnPointerUp(PointerEventData eventData);
+
     }
 
 }

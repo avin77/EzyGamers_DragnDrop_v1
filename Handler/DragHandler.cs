@@ -5,7 +5,7 @@ namespace ezygamers.dragndropv1
 {
     //This class handle the drag logic of the GameObject
     //to the strategy defined by IDragHandler
-    public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerUpHandler
     {
 
         //it used for handling the drag operations 
@@ -29,7 +29,19 @@ namespace ezygamers.dragndropv1
 
         }
 
-        //when usen begins dragging a gameobject
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            // Handle pointer down event
+            dragStrategy?.OnPointerDown(eventData);
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            // Handle pointer up event
+            dragStrategy?.OnPointerUp(eventData);
+        }
+
+        //when user begins dragging a gameobject
         //if dragStrategy is assigned.
         public void OnBeginDrag(PointerEventData eventData)
         {
